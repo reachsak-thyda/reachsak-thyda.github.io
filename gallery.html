@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Our Gallery 💍</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --cream: #f9f4ee; --warm: #e8ddd0; --gold: #b8975a; --gold-light: #d4b483; --dark: #2a2118; --mid: #6b5c4e; }
+    body { font-family: 'Jost', sans-serif; background: var(--cream); color: var(--dark); min-height: 100vh; }
+    body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(ellipse 80% 50% at 20% 0%, rgba(184,151,90,0.07) 0%, transparent 60%), radial-gradient(ellipse 60% 70% at 80% 100%, rgba(184,151,90,0.05) 0%, transparent 60%); }
+    header { text-align: center; padding: 56px 24px 40px; position: relative; z-index: 1; animation: fadeDown 0.8s ease both; }
+    .ornament { font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); font-weight: 300; display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 16px; }
+    .ornament::before, .ornament::after { content: ''; height: 1px; width: 40px; background: linear-gradient(to right, transparent, var(--gold-light)); }
+    .ornament::after { background: linear-gradient(to left, transparent, var(--gold-light)); }
+    h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.4rem, 6vw, 3.6rem); font-weight: 300; color: var(--dark); line-height: 1.1; }
+    h1 em { font-style: italic; color: var(--gold); }
+    .sub { margin-top: 12px; font-size: 0.83rem; color: var(--mid); font-weight: 300; letter-spacing: 0.05em; }
+    .nav-links { display: flex; gap: 20px; justify-content: center; margin-top: 20px; }
+    .back-link { display: inline-block; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); text-decoration: none; font-weight: 300; transition: opacity 0.2s; }
+    .back-link:hover { opacity: 0.6; }
+    .gallery-wrap { position: relative; z-index: 1; padding: 0 16px 80px; max-width: 1200px; margin: 0 auto; }
+    #photo-count { text-align: center; font-size: 0.78rem; letter-spacing: 0.15em; color: var(--mid); font-weight: 300; margin-bottom: 32px; text-transform: uppercase; }
+    #gallery { columns: 3 280px; column-gap: 12px; }
+    .photo-card { break-inside: avoid; margin-bottom: 12px; position: relative; overflow: hidden; background: var(--warm); cursor: pointer; animation: fadeUp 0.5s ease both; }
+    .photo-card img { width: 100%; display: block; transition: transform 0.5s ease; }
+    .photo-card:hover img { transform: scale(1.03); }
+    .photo-meta { position: absolute; bottom: 0; left: 0; right: 0; padding: 24px 14px 12px; background: linear-gradient(to top, rgba(42,33,24,0.6) 0%, transparent 100%); color: white; opacity: 0; transition: opacity 0.3s; }
+    .photo-card:hover .photo-meta { opacity: 1; }
+    .photo-name { font-size: 0.78rem; font-weight: 300; letter-spacing: 0.08em; }
+    .photo-date { font-size: 0.68rem; opacity: 0.7; margin-top: 2px; font-weight: 300; }
+    #loading { text-align: center; padding: 60px; font-size: 0.85rem; color: var(--mid); font-weight: 300; letter-spacing: 0.1em; }
+    .spinner { width: 28px; height: 28px; border: 1px solid var(--warm); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #empty { display: none; text-align: center; padding: 80px 24px; }
+    #empty.show { display: block; }
+    #empty h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 300; color: var(--dark); margin-bottom: 10px; }
+    #empty p { font-size: 0.85rem; color: var(--mid); font-weight: 300; }
+    .lightbox { display: none; position: fixed; inset: 0; background: rgba(42,33,24,0.92); z-index: 100; align-items: center; justify-content: center; padding: 24px; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 90vw; max-height: 85vh; object-fit: contain; display: block; }
+    .lightbox-close { position: absolute; top: 20px; right: 24px; color: rgba(255,255,255,0.7); font-size: 1.8rem; cursor: pointer; background: none; border: none; line-height: 1; font-weight: 200; font-family: 'Cormorant Garamond', serif; transition: color 0.2s; }
+    .lightbox-close:hover { color: white; }
+    .lightbox-info { position: absolute; bottom: 24px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,0.6); font-size: 0.78rem; font-weight: 300; letter-spacing: 0.1em; }
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 500px) { #gallery { columns: 2; } }
+  </style>
+</head>
+<body>
+<header>
+  <div class="ornament">Shared Memories</div>
+  <h1>Our <em>Gallery</em></h1>
+  <p class="sub">Photos shared by guests — with love</p>
+  <div class="nav-links">
+    <a href="upload.html" class="back-link">📤 Upload Photos</a>
+    <a href="index.html" class="back-link">← Wedding Page</a>
+  </div>
+</header>
+<div class="gallery-wrap">
+  <div id="loading"><div class="spinner"></div>Loading photos…</div>
+  <div id="photo-count" style="display:none"></div>
+  <div id="gallery"></div>
+  <div id="empty"><h2>No photos yet</h2><p>Be the first to share a moment from today.</p></div>
+</div>
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lb-close">✕</button>
+  <img id="lb-img" src="" alt=""/>
+  <div class="lightbox-info" id="lb-info"></div>
+</div>
+
+<script>
+  const CLOUD_NAME    = "dsrnmlpnj";
+  const UPLOAD_PRESET = "photoshare";
+  const loadingEl = document.getElementById('loading');
+  const gallery   = document.getElementById('gallery');
+  const emptyEl   = document.getElementById('empty');
+  const countEl   = document.getElementById('photo-count');
+  const lightbox  = document.getElementById('lightbox');
+  const lbImg     = document.getElementById('lb-img');
+  const lbInfo    = document.getElementById('lb-info');
+  const lbClose   = document.getElementById('lb-close');
+
+  lbClose.addEventListener('click', () => lightbox.classList.remove('open'));
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.classList.remove('open'); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') lightbox.classList.remove('open'); });
+
+  async function loadPhotos() {
+    const endpoints = [
+      `https://res.cloudinary.com/${CLOUD_NAME}/image/list/wedding.json`,
+      `https://res.cloudinary.com/${CLOUD_NAME}/image/list/.json`
+    ];
+    let resources = [];
+    let anyOk = false;
+    for (const endpoint of endpoints) {
+      try {
+        const res = await fetch(endpoint);
+        if (res.ok) {
+          anyOk = true;
+          const data = await res.json();
+          resources = data.resources || [];
+          if (resources.length > 0) break;
+        }
+      } catch (e) {}
+    }
+    loadingEl.style.display = 'none';
+    if (!anyOk) {
+      loadingEl.style.display = 'block';
+      loadingEl.innerHTML = `<p style="color:#c0614a;line-height:2;font-size:0.85rem;max-width:500px;margin:0 auto">❌ <strong>Cloudinary blocked the request.</strong><br>Go to <strong>Cloudinary → Settings → Security</strong><br>→ Find <strong>"Resource list"</strong> → uncheck it → Save</p>`;
+      return;
+    }
+    if (resources.length === 0) { emptyEl.classList.add('show'); return; }
+    resources.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    countEl.style.display = 'block';
+    countEl.textContent = `${resources.length} photo${resources.length !== 1 ? 's' : ''} shared`;
+    resources.forEach((photo, i) => {
+      const thumb   = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/q_auto,f_auto,w_600/${photo.public_id}`;
+      const full    = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${photo.public_id}`;
+      const dateStr = new Date(photo.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const uploader = photo.context?.custom?.uploader || 'Guest';
+      const card = document.createElement('div');
+      card.className = 'photo-card';
+      card.style.animationDelay = (i * 0.04) + 's';
+      card.innerHTML = `<img src="${thumb}" alt="Photo by ${uploader}" loading="lazy"/><div class="photo-meta"><div class="photo-name">${uploader}</div><div class="photo-date">${dateStr}</div></div>`;
+      card.addEventListener('click', () => { lbImg.src = full; lbInfo.textContent = `${uploader} · ${dateStr}`; lightbox.classList.add('open'); });
+      gallery.appendChild(card);
+    });
+  }
+  loadPhotos();
+</script>
+</body>
+</html>

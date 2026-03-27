@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Share Your Moments 💍</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      :root { --cream: #f9f4ee; --warm: #e8ddd0; --gold: #b8975a; --gold-light: #d4b483; --dark: #2a2118; --mid: #6b5c4e; --text: #3d3028; }
+      body { font-family: "Jost", sans-serif; background-color: var(--cream); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+      body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(ellipse 80% 60% at 20% 10%, rgba(184,151,90,0.08) 0%, transparent 60%), radial-gradient(ellipse 60% 80% at 80% 90%, rgba(184,151,90,0.06) 0%, transparent 60%); pointer-events: none; z-index: 0; }
+      .grain { position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; opacity: 0.4; }
+      .page { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 60px 24px 80px; }
+      header { text-align: center; margin-bottom: 56px; animation: fadeDown 0.9s ease both; }
+      .ornament { font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); font-family: "Jost", sans-serif; font-weight: 300; display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 20px; }
+      .ornament::before, .ornament::after { content: ""; height: 1px; width: 48px; background: linear-gradient(to right, transparent, var(--gold-light)); }
+      .ornament::after { background: linear-gradient(to left, transparent, var(--gold-light)); }
+      h1 { font-family: "Cormorant Garamond", serif; font-size: clamp(2.8rem, 7vw, 4.2rem); font-weight: 300; line-height: 1.1; color: var(--dark); letter-spacing: -0.01em; }
+      h1 em { font-style: italic; color: var(--gold); }
+      .subtitle { margin-top: 16px; font-size: 0.88rem; font-weight: 300; letter-spacing: 0.04em; color: var(--mid); line-height: 1.7; }
+      .date-tag { display: inline-block; margin-top: 20px; padding: 6px 20px; border: 1px solid var(--gold-light); color: var(--gold); font-size: 0.78rem; letter-spacing: 0.25em; text-transform: uppercase; font-weight: 300; }
+      .drop-zone { border: 1px dashed var(--gold-light); background: rgba(255,255,255,0.5); padding: 52px 32px; text-align: center; cursor: pointer; transition: all 0.3s ease; position: relative; animation: fadeUp 0.9s 0.2s ease both; }
+      .drop-zone:hover, .drop-zone.drag-over { background: rgba(184,151,90,0.06); border-color: var(--gold); }
+      .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+      .drop-icon { width: 52px; height: 52px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; }
+      .drop-icon svg { stroke: var(--gold); }
+      .drop-label { font-family: "Cormorant Garamond", serif; font-size: 1.5rem; font-weight: 300; color: var(--dark); margin-bottom: 8px; }
+      .drop-sub { font-size: 0.82rem; color: var(--mid); font-weight: 300; letter-spacing: 0.05em; }
+      .field-group { margin-top: 20px; animation: fadeUp 0.9s 0.3s ease both; }
+      .field-group label { display: block; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mid); font-weight: 300; margin-bottom: 8px; }
+      .field-group input[type="text"] { width: 100%; padding: 14px 18px; background: rgba(255,255,255,0.6); border: 1px solid var(--warm); color: var(--dark); font-family: "Jost", sans-serif; font-size: 0.9rem; font-weight: 300; outline: none; transition: border-color 0.2s; }
+      .field-group input[type="text"]:focus { border-color: var(--gold-light); }
+      .field-group input::placeholder { color: #b0a090; }
+      #preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 20px; animation: fadeUp 0.5s ease both; }
+      .preview-thumb { aspect-ratio: 1; overflow: hidden; position: relative; background: var(--warm); }
+      .preview-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .preview-thumb .remove-btn { position: absolute; top: 4px; right: 4px; background: rgba(42,33,24,0.7); color: white; border: none; width: 22px; height: 22px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; opacity: 0; transition: opacity 0.2s; }
+      .preview-thumb:hover .remove-btn { opacity: 1; }
+      .upload-btn { margin-top: 24px; width: 100%; padding: 16px; background: var(--dark); color: var(--cream); border: none; font-family: "Jost", sans-serif; font-size: 0.82rem; font-weight: 300; letter-spacing: 0.25em; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; animation: fadeUp 0.9s 0.4s ease both; position: relative; overflow: hidden; }
+      .upload-btn:hover:not(:disabled) { background: var(--gold); }
+      .upload-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+      .progress-wrap { margin-top: 20px; display: none; }
+      .progress-wrap.active { display: block; }
+      .progress-bar-bg { height: 2px; background: var(--warm); position: relative; overflow: hidden; }
+      .progress-bar-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s ease; }
+      .progress-label { font-size: 0.78rem; color: var(--mid); letter-spacing: 0.1em; margin-top: 10px; font-weight: 300; }
+      .success-box { display: none; text-align: center; padding: 48px 32px; border: 1px solid var(--gold-light); background: rgba(255,255,255,0.5); animation: fadeUp 0.6s ease both; }
+      .success-box.show { display: block; }
+      .success-icon { font-size: 2.5rem; margin-bottom: 16px; }
+      .success-box h2 { font-family: "Cormorant Garamond", serif; font-size: 2rem; font-weight: 300; color: var(--dark); margin-bottom: 10px; }
+      .success-box p { font-size: 0.85rem; color: var(--mid); font-weight: 300; letter-spacing: 0.05em; }
+      .btn-again { margin-top: 24px; display: inline-block; padding: 12px 32px; border: 1px solid var(--gold-light); color: var(--gold); font-family: "Jost", sans-serif; font-size: 0.78rem; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; background: none; transition: all 0.3s; }
+      .btn-again:hover { background: var(--gold); color: white; border-color: var(--gold); }
+      .gallery-link { display: block; text-align: center; margin-top: 40px; font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); text-decoration: none; font-weight: 300; transition: opacity 0.2s; animation: fadeUp 0.9s 0.5s ease both; }
+      .gallery-link:hover { opacity: 0.6; }
+      .back-link { display: block; text-align: center; margin-top: 16px; font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mid); text-decoration: none; font-weight: 300; transition: opacity 0.2s; }
+      .back-link:hover { opacity: 0.6; }
+      footer { text-align: center; margin-top: 64px; font-size: 0.72rem; color: #c0b0a0; letter-spacing: 0.1em; font-weight: 300; animation: fadeUp 0.9s 0.6s ease both; }
+      .divider { display: flex; align-items: center; gap: 16px; margin: 40px 0; opacity: 0.4; }
+      .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--gold-light); }
+      .divider span { font-size: 0.9rem; color: var(--gold); }
+      @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+      .error-msg { margin-top: 12px; font-size: 0.8rem; color: #c0614a; letter-spacing: 0.05em; font-weight: 300; display: none; }
+      .error-msg.show { display: block; }
+    </style>
+  </head>
+  <body>
+    <div class="grain"></div>
+    <div class="page">
+      <header>
+        <div class="ornament">Wedding Day</div>
+        <h1>Share Your<br /><em>Moments</em></h1>
+        <p class="subtitle">Captured through your eyes — every photo is a gift.<br />Upload your favourites from today.</p>
+        <span class="date-tag">June 19, 2026 &nbsp;·&nbsp; Reachsak & Thyda</span>
+      </header>
+
+      <div id="upload-section">
+        <div class="drop-zone" id="drop-zone">
+          <input type="file" id="file-input" multiple accept="image/*" />
+          <div class="drop-icon">
+            <svg width="36" height="36" fill="none" stroke-width="1.2" viewBox="0 0 24 24">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+          </div>
+          <div class="drop-label">Drop photos here</div>
+          <div class="drop-sub">or tap to browse · JPG, PNG, HEIC · up to 20MB each</div>
+        </div>
+
+        <div id="preview-grid"></div>
+
+        <div class="field-group">
+          <label for="guest-name">Your name (optional)</label>
+          <input type="text" id="guest-name" placeholder="e.g. Sarah & Tom" maxlength="60" />
+        </div>
+
+        <div class="error-msg" id="error-msg"></div>
+        <button class="upload-btn" id="upload-btn" disabled>Upload Photos</button>
+
+        <div class="progress-wrap" id="progress-wrap">
+          <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+          <div class="progress-label" id="progress-label">Uploading…</div>
+        </div>
+      </div>
+
+      <div class="success-box" id="success-box">
+        <div class="success-icon">🌸</div>
+        <h2>Thank you!</h2>
+        <p>Your photos have been added to our collection.<br />We're so glad you shared this day with us.</p>
+        <button class="btn-again" id="btn-again">Upload More</button>
+      </div>
+
+      <div class="divider"><span>✦</span></div>
+      <a href="gallery.html" class="gallery-link">View the shared gallery →</a>
+      <a href="index.html" class="back-link">← Back to wedding page</a>
+
+      <footer>With love &nbsp;·&nbsp; No account needed &nbsp;·&nbsp; Photos shared privately with the couple</footer>
+    </div>
+
+    <script>
+      const CLOUD_NAME = "dsrnmlpnj";
+      const UPLOAD_PRESET = "photoshare";
+      const CONFIGURED = CLOUD_NAME !== "YOUR_CLOUD_NAME";
+      const dropZone = document.getElementById("drop-zone");
+      const fileInput = document.getElementById("file-input");
+      const previewGrid = document.getElementById("preview-grid");
+      const uploadBtn = document.getElementById("upload-btn");
+      const progressWrap = document.getElementById("progress-wrap");
+      const progressFill = document.getElementById("progress-fill");
+      const progressLbl = document.getElementById("progress-label");
+      const successBox = document.getElementById("success-box");
+      const uploadSec = document.getElementById("upload-section");
+      const errorMsg = document.getElementById("error-msg");
+      const guestName = document.getElementById("guest-name");
+      const btnAgain = document.getElementById("btn-again");
+      let selectedFiles = [];
+
+      dropZone.addEventListener("dragover", (e) => { e.preventDefault(); dropZone.classList.add("drag-over"); });
+      dropZone.addEventListener("dragleave", () => dropZone.classList.remove("drag-over"));
+      dropZone.addEventListener("drop", (e) => { e.preventDefault(); dropZone.classList.remove("drag-over"); addFiles([...e.dataTransfer.files]); });
+      fileInput.addEventListener("change", () => addFiles([...fileInput.files]));
+
+      function addFiles(newFiles) {
+        const images = newFiles.filter((f) => f.type.startsWith("image/"));
+        selectedFiles = [...selectedFiles, ...images];
+        renderPreviews();
+        uploadBtn.disabled = selectedFiles.length === 0;
+      }
+
+      function renderPreviews() {
+        previewGrid.innerHTML = "";
+        selectedFiles.forEach((file, i) => {
+          const url = URL.createObjectURL(file);
+          const div = document.createElement("div");
+          div.className = "preview-thumb";
+          div.innerHTML = `<img src="${url}" alt=""/><button class="remove-btn" data-i="${i}">✕</button>`;
+          previewGrid.appendChild(div);
+        });
+        previewGrid.querySelectorAll(".remove-btn").forEach((btn) => {
+          btn.addEventListener("click", (e) => { e.stopPropagation(); selectedFiles.splice(+btn.dataset.i, 1); renderPreviews(); uploadBtn.disabled = selectedFiles.length === 0; });
+        });
+      }
+
+      uploadBtn.addEventListener("click", async () => {
+        hideError();
+        if (!CONFIGURED) { showError("Please configure Cloudinary credentials."); return; }
+        if (selectedFiles.length === 0) return;
+        uploadBtn.disabled = true;
+        progressWrap.classList.add("active");
+        const name = guestName.value.trim() || "Guest";
+        try {
+          for (let i = 0; i < selectedFiles.length; i++) {
+            const file = selectedFiles[i];
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("upload_preset", UPLOAD_PRESET);
+            formData.append("folder", "wedding");
+            formData.append("tags", `wedding`);
+            formData.append("context", `uploader=${name}`);
+            await new Promise((resolve, reject) => {
+              const xhr = new XMLHttpRequest();
+              xhr.open("POST", `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`);
+              xhr.upload.onprogress = (e) => {
+                if (e.lengthComputable) {
+                  const overall = ((i + e.loaded / e.total) / selectedFiles.length) * 100;
+                  progressFill.style.width = overall + "%";
+                  progressLbl.textContent = `Uploading ${i + 1} of ${selectedFiles.length}…`;
+                }
+              };
+              xhr.onload = () => xhr.status === 200 ? resolve() : reject(new Error("Upload failed"));
+              xhr.onerror = () => reject(new Error("Network error"));
+              xhr.send(formData);
+            });
+          }
+          progressFill.style.width = "100%";
+          progressLbl.textContent = "Done!";
+          setTimeout(() => { uploadSec.style.display = "none"; successBox.classList.add("show"); }, 600);
+        } catch (err) {
+          showError("Upload failed: " + err.message);
+          uploadBtn.disabled = false;
+        }
+      });
+
+      btnAgain.addEventListener("click", () => {
+        selectedFiles = []; previewGrid.innerHTML = ""; fileInput.value = ""; guestName.value = "";
+        uploadBtn.disabled = true; progressWrap.classList.remove("active"); progressFill.style.width = "0%";
+        uploadSec.style.display = ""; successBox.classList.remove("show");
+      });
+
+      function showError(msg) { errorMsg.textContent = msg; errorMsg.classList.add("show"); }
+      function hideError() { errorMsg.classList.remove("show"); }
+    </script>
+  </body>
+</html>
