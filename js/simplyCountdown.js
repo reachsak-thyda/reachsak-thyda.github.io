@@ -92,8 +92,8 @@
       {
         // 🎯 TARGET DATE
         year: 2026,
-        month: 5,
-        day: 3,
+        month: 6,
+        day: 19,
         hours: 0,
         minutes: 0,
         seconds: 0,
